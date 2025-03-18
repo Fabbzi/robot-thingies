@@ -9,7 +9,7 @@ function wait_for_response (str: string) {
     while (true) {
         serial_str = "" + serial_str + serial.readString()
         if (serial_str.length > 200) {
-            serial_str = serial_str.substr(serial_str.length - 200, 0)
+            serial_str = serial_str.substr(serial_str.length - 100, 0)
         }
         if (serial_str.includes(str)) {
             result2 = true
@@ -104,8 +104,7 @@ pins.digitalWritePin(LED_pin, 0)
 // older ESP8266s may use 51200 or 9600...
 serial.redirect(Tx_pin, Rx_pin, 115200)
 sendAT("AT+RESTORE", 1000)
-sendAT("AT+RST", 1000)
-sendAT("AT+CWMODE=" + WIFI_MODE)
+sendAT("AT+CWMODE=" + WIFI_MODE + ";AT+RST", 1000);
 if (WIFI_MODE == 1) {
     sendAT("AT+CWJAP=\"" + SSID_1 + "\",\"" + PASSWORD_1 + "\"")
 result = wait_for_response("OK")
@@ -125,7 +124,7 @@ while (true) {
     // read and store 200 characters from serial port
     serial_str = "" + serial_str + serial.readString()
     if (serial_str.length > 200) {
-        serial_str = serial_str.substr(serial_str.length - 200, 0)
+        serial_str = serial_str.substr(serial_str.length - 100, 0)
     }
     if (serial_str.includes("+IPD") && serial_str.includes("HTTP")) {
         // got a HTTP request
