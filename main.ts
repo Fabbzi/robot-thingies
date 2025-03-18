@@ -157,6 +157,7 @@ while (true) {
                 for (let index = 0; index < 400; index++) {
                     maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, speed)
                     maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Backward, speed)
+                    
                 }
                 maqueenPlusV2.controlMotorStop(maqueenPlusV2.MyEnumMotor.AllMotor)
                 //maqueenPlusV2.setBrightness(100)
@@ -165,9 +166,10 @@ while (true) {
             case "fore": // request 192.168.x.x/fore
                 GET_success = true
 
-                for (let index2 = 0; index2 < 400; index2++) {
+                for (let index2 = 0; index2 < 1000; index2++) {
                     maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, speed)
                     maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Forward, speed)
+                    speed += 10
                 }
                 maqueenPlusV2.controlMotorStop(maqueenPlusV2.MyEnumMotor.AllMotor)
                 //maqueenPlusV2.setBrightness(100)
