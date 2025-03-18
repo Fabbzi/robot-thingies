@@ -73,21 +73,23 @@ let html = ""
 let web_title = ""
 let result2 = false
 let time = 0
-let HTML_str = ""
-let GET_command = ""
 let HTTP_pos = 0
 let GET_pos = 0
-let client_ID = ""
 let serial_str = ""
 let result = false
-let GET_success: boolean = false
 let LED_status: number = 0
+let GET_success: boolean = false
+let client_ID = ""
+let GET_command = ""
+let HTML_str = ""
+
+//robot variables
+let speed = 20
+
 // user settings
 // 1 = STA (station, connect to wifi router); 2 = AP (make itself an access point)
 let WIFI_MODE = 2
-// To Rx pin of ESP-01
 const Tx_pin: SerialPin = SerialPin.P12
-// To Tx pin of ESP-01
 const Rx_pin: SerialPin = SerialPin.P8
 // pin for LED control
 let LED_pin = DigitalPin.P2
@@ -101,7 +103,6 @@ let SSID_2 = "LinusToy"
 let PASSWORD_2 = "gaylinux"
 // initialize LED
 pins.digitalWritePin(LED_pin, 0)
-// older ESP8266s may use 51200 or 9600...
 serial.redirect(Tx_pin, Rx_pin, 115200)
 sendAT("AT+RESTORE", 1000)
 sendAT("AT+RST", 1000)
@@ -154,8 +155,8 @@ while (true) {
 
                 music.play(music.stringPlayable("C5 D E G - C5 A F ", 320), music.PlaybackMode.UntilDone)
                 for (let index = 0; index < 400; index++) {
-                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, 20)
-                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Backward, 20)
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, speed)
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Backward, speed)
                 }
                 maqueenPlusV2.controlMotorStop(maqueenPlusV2.MyEnumMotor.AllMotor)
                 //maqueenPlusV2.setBrightness(100)
@@ -164,9 +165,9 @@ while (true) {
             case "fore": // request 192.168.x.x/fore
                 GET_success = true
 
-                for (let index = 0; index < 400; index++) {
-                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, 20)
-                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Forward, 20)
+                for (let index2 = 0; index2 < 400; index2++) {
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, speed)
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Forward, speed)
                 }
                 maqueenPlusV2.controlMotorStop(maqueenPlusV2.MyEnumMotor.AllMotor)
                 //maqueenPlusV2.setBrightness(100)
@@ -175,9 +176,9 @@ while (true) {
             case "back": // request 192.168.x.x/back
                 GET_success = true
 
-                for (let index = 0; index < 400; index++) {
-                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, 20)
-                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Forward, 20)
+                for (let index3 = 0; index3 < 400; index3++) {
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Backward, speed)
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Backward, speed)
                 }
                 maqueenPlusV2.controlMotorStop(maqueenPlusV2.MyEnumMotor.AllMotor)
                 //maqueenPlusV2.setBrightness(100)
