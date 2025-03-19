@@ -4,6 +4,142 @@
  * by Alan Wang
  */
 // for wifi connection
+// generate HTML
+
+
+function getHTML(normal: boolean) {
+
+
+    web_title = "ESP8266 (ESP-01) Wifi on BBC micro:bit"
+
+
+    // HTTP response
+
+
+    html = "" + html + "HTTP/1.1 200 OK\r\n"
+
+
+    html = "" + html + "Content-Type: text/html\r\n"
+
+
+    html = "" + html + "Connection: close\r\n\r\n"
+
+
+    html = "" + html + "<!DOCTYPE html>"
+
+
+    html = "" + html + "<html>"
+
+
+    html = "" + html + "<head>"
+
+
+    html = "" + html + "<link rel=\"icon\" href=\"data:,\">"
+
+
+    html = "" + html + "<title>" + web_title + "</title>"
+
+
+    // mobile view
+
+
+    html = "" + html + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+
+
+    html = "" + html + "</head>"
+
+
+    html = "" + html + "<body>"
+
+
+    html = "" + html + "<div style=\"text-align:center\">"
+
+
+    html = "" + html + "<h1>" + web_title + "</h1>"
+
+
+    html = "" + html + "<br>"
+
+
+    html = "" + html + "<input type=\"button\" onClick=\"window.location.href='fore' \" value=\"" + "MOVE FORWARD" + "\">"
+
+
+    // generate status text
+
+
+    if (normal) {
+
+
+        if (LED_status) {
+
+
+            LED_statusString = "ON"
+
+
+            LED_buttonString = "TURN IT OFF"
+
+
+        } else {
+
+
+            LED_statusString = "OFF"
+
+
+            LED_buttonString = "TURN IT ON"
+
+
+        }
+
+
+        html = "" + html + "<h3>LED STATUS: " + LED_statusString + "</h3>"
+
+
+        html = "" + html + "<h3>Light Level STATUS: " + input.lightLevel().toString() + "</h3>"
+
+
+        html = "" + html + "<h3>Temp STATUS: " + input.temperature().toString() + "</h3>"
+
+
+        html = "" + html + "<br>"
+
+
+        // generate buttons
+
+
+        html = "" + html + "<input type=\"button\" onClick=\"window.location.href='LED'\" value=\"" + LED_buttonString + "\">"
+
+
+        html = "" + html + "<br>"
+
+
+    } else {
+
+
+        html = "" + html + "<h3>ERROR: REQUEST NOT FOUND</h3>"
+
+
+    }
+
+
+    html = "" + html + "<br>"
+
+
+    html = "" + html + "<input type=\"button\" onClick=\"window.location.href='/'\" value=\"Home\">"
+
+
+    html = "" + html + "</div>"
+
+
+    html = "" + html + "</body>"
+
+
+    html = "" + html + "</html>"
+
+
+    return html
+
+
+}
 function wait_for_response (str: string) {
     time = input.runningTime()
     while (true) {
@@ -21,52 +157,7 @@ function wait_for_response (str: string) {
     }
     return result2
 }
-// generate HTML
-function getHTML (normal: boolean) {
-    web_title = "ESP8266 (ESP-01) Wifi on BBC micro:bit"
-    // HTTP response
-    html = "" + html + "HTTP/1.1 200 OK\r\n"
-    html = "" + html + "Content-Type: text/html\r\n"
-    html = "" + html + "Connection: close\r\n\r\n"
-    html = "" + html + "<!DOCTYPE html>"
-    html = "" + html + "<html>"
-    html = "" + html + "<head>"
-    html = "" + html + "<link rel=\"icon\" href=\"data:,\">"
-    html = "" + html + "<title>" + web_title + "</title>"
-    // mobile view
-    html = "" + html + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
-    html = "" + html + "</head>"
-    html = "" + html + "<body>"
-    html = "" + html + "<div style=\"text-align:center\">"
-    html = "" + html + "<h1>" + web_title + "</h1>"
-    html = "" + html + "<br>"
-    html = "" + html + "<input type=\"button\" onClick=\"window.location.href='fore' \" value=\"" + "MOVE FORWARD" + "\">"
-    // generate status text
-    if (normal) {
-        if (LED_status) {
-            LED_statusString = "ON"
-            LED_buttonString = "TURN IT OFF"
-        } else {
-            LED_statusString = "OFF"
-            LED_buttonString = "TURN IT ON"
-        }
-        html = "" + html + "<h3>LED STATUS: " + LED_statusString + "</h3>"
-        html = "" + html + "<h3>Light Level STATUS: " + input.lightLevel().toString() + "</h3>"
-        html = "" + html + "<h3>Temp STATUS: " + input.temperature().toString() + "</h3>"
-        html = "" + html + "<br>"
-        // generate buttons
-        html = "" + html + "<input type=\"button\" onClick=\"window.location.href='LED'\" value=\"" + LED_buttonString + "\">"
-        html = "" + html + "<br>"
-    } else {
-        html = "" + html + "<h3>ERROR: REQUEST NOT FOUND</h3>"
-    }
-    html = "" + html + "<br>"
-    html = "" + html + "<input type=\"button\" onClick=\"window.location.href='/'\" value=\"Home\">"
-    html = "" + html + "</div>"
-    html = "" + html + "</body>"
-    html = "" + html + "</html>"
-    return html
-}
+
 let LED_buttonString = ""
 let LED_statusString = ""
 let html = ""
@@ -154,8 +245,8 @@ while (true) {
 
                 music.play(music.stringPlayable("C5 D E G - C5 A F ", 320), music.PlaybackMode.UntilDone)
                 for (let index = 0; index < 400; index++) {
-                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, 20)
-                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Backward, 20)
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, 50)
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Backward, 50)
                 }
                 maqueenPlusV2.controlMotorStop(maqueenPlusV2.MyEnumMotor.AllMotor)
                 //maqueenPlusV2.setBrightness(100)
@@ -165,8 +256,8 @@ while (true) {
                 GET_success = true
 
                 for (let index = 0; index < 400; index++) {
-                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, 20)
-                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Forward, 20)
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, 50)
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Forward, 50)
                 }
                 maqueenPlusV2.controlMotorStop(maqueenPlusV2.MyEnumMotor.AllMotor)
                 //maqueenPlusV2.setBrightness(100)
@@ -176,14 +267,36 @@ while (true) {
                 GET_success = true
 
                 for (let index = 0; index < 400; index++) {
-                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Backward, 20)
-                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Backward, 20)
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Backward, 50)
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Backward, 50)
                 }
                 maqueenPlusV2.controlMotorStop(maqueenPlusV2.MyEnumMotor.AllMotor)
                 //maqueenPlusV2.setBrightness(100)
 
                 break
+
+            case "left":
+                GET_success = true
+
+                for (let index = 0; index < 400; index++) {
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, 50)
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Backward, 50)
+                }
+                maqueenPlusV2.controlMotorStop(maqueenPlusV2.MyEnumMotor.AllMotor)
+
+            case "right":
+                GET_success = true
+
+                for (let index = 0; index < 400; index++) {
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Forward, 50)
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Backward, 50)
+                }
+                maqueenPlusV2.controlMotorStop(maqueenPlusV2.MyEnumMotor.AllMotor)
+
+            
         }
+
+
 // output HTML
         HTML_str = getHTML(GET_success)
         sendAT("AT+CIPSEND=" + client_ID + "," + (HTML_str.length + 2))
