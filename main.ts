@@ -93,16 +93,16 @@ function handleCommand(command: string): boolean {
             playSpin();
             return true;
         case "fore":
-            moveMotors(maqueenPlusV2.MyEnumDir.Forward);
+            moveMotors("Forward");
             return true;
         case "back":
-            moveMotors(maqueenPlusV2.MyEnumDir.Backward);
+            moveMotors("Backward");
             return true;
         case "left":
-            moveMotors(maqueenPlusV2.MyEnumDir.Left);
+            moveMotors("Left");
             return true;
         case "right":
-            moveMotors(maqueenPlusV2.MyEnumDir.Right);
+            moveMotors("Right");
             return true;
         default:
             return false;
@@ -126,22 +126,22 @@ function playSpin(): void {
 }
 
 // Helper function to move motors
-function moveMotors(direction: maqueenPlusV2.MyEnumDir): void {
+function moveMotors(direction: string): void {
     const speed = 20;
     switch (direction) {
-        case maqueenPlusV2.MyEnumDir.Forward:
-            maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, direction, speed);
-            maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, direction, speed);
+        case "Forward":
+            maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, speed);
+            maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Forward, speed);
             break;
-        case maqueenPlusV2.MyEnumDir.Backward:
-            maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, direction, speed);
-            maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, direction, speed);
+        case "Backward":
+            maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Backward, speed);
+            maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Backward, speed);
             break;
-        case maqueenPlusV2.MyEnumDir.Left:
+        case "Left":
             maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, speed);
             maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Backward, speed);
             break;
-        case maqueenPlusV2.MyEnumDir.Right:
+        case "Right":
             maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Backward, speed);
             maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Forward, speed);
             break;
@@ -268,7 +268,7 @@ function moveMotors(direction: maqueenPlusV2.MyEnumDir): void {
 }
 
 // User settings
-const WIFI_MODE = 2;
+let WIFI_MODE = 2;
 const Tx_pin: SerialPin = SerialPin.P12;
 const Rx_pin: SerialPin = SerialPin.P8;
 const LED_pin = DigitalPin.P2;
