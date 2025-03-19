@@ -6,7 +6,7 @@
         "radio": "*",
         "microphone": "*",
         "pxt-esp8266_thingspeak": "github:alankrantas/pxt-esp8266_thingspeak#v0.0.3",
-        "maqueenPlusV2": "github:dfrobot/pxt-dfrobot_maqueenplus_v20#v2.2.17"
+        "maqueenPlusV2": "github:DFRobot/pxt-DFRobot_MaqueenPlus_v20#v2.2.17"
     },
     "files": [
         "main.blocks",
