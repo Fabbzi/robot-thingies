@@ -183,7 +183,27 @@ while (true) {
                 //maqueenPlusV2.setBrightness(100)
 
                 break
+
+            case "left":
+                GET_success = true
+
+                for (let index = 0; index < 400; index++) {
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, 20)
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Backward, 20)
+                }
+                maqueenPlusV2.controlMotorStop(maqueenPlusV2.MyEnumMotor.AllMotor)
+
+            case "right":
+                GET_success = true
+
+                for (let index = 0; index < 400; index++) {
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Forward, 20)
+                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Backward, 20)
+                }
+                maqueenPlusV2.controlMotorStop(maqueenPlusV2.MyEnumMotor.AllMotor)
         }
+
+
 // output HTML
         HTML_str = getHTML(GET_success)
         sendAT("AT+CIPSEND=" + client_ID + "," + (HTML_str.length + 2))
