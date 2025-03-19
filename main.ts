@@ -138,6 +138,9 @@ function moveMotors(direction: string): void {
             maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Backward, speed);
             break;
         case "Left":
+            maqueenPlusV2.controlLED(maqueenPlusV2.MyEnumLed.LeftLed, maqueenPlusV2.MyEnumSwitch.Open)
+            maqueenPlusV2.setIndexColor(maqueenPlusV2.ledRange(0, 3), maqueenPlusV2.NeoPixelColors.Red, 100)
+            maqueenPlusV2.controlLED(maqueenPlusV2.MyEnumLed.LeftLed, maqueenPlusV2.MyEnumSwitch.Close)
             maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, speed);
             maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Backward, speed);
             break;
@@ -145,7 +148,7 @@ function moveMotors(direction: string): void {
             maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Backward, speed);
             maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Forward, speed);
             break;
-             case "GAY": // request 192.168.x.x/GAY
+        case "GAY": // request 192.168.x.x/GAY
             basic.showIcon(IconNames.Heart);
             maqueenPlusV2.setBrightness(200);
             maqueenPlusV2.ledRainbow(DigitalPin.P15, 1, 360);
