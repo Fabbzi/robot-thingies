@@ -21,52 +21,7 @@ function wait_for_response (str: string) {
     }
     return result2
 }
-// generate HTML
-function getHTML (normal: boolean) {
-    web_title = "ESP8266 (ESP-01) Wifi on BBC micro:bit"
-    // HTTP response
-    html = "" + html + "HTTP/1.1 200 OK\r\n"
-    html = "" + html + "Content-Type: text/html\r\n"
-    html = "" + html + "Connection: close\r\n\r\n"
-    html = "" + html + "<!DOCTYPE html>"
-    html = "" + html + "<html>"
-    html = "" + html + "<head>"
-    html = "" + html + "<link rel=\"icon\" href=\"data:,\">"
-    html = "" + html + "<title>" + web_title + "</title>"
-    // mobile view
-    html = "" + html + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
-    html = "" + html + "</head>"
-    html = "" + html + "<body>"
-    html = "" + html + "<div style=\"text-align:center\">"
-    html = "" + html + "<h1>" + web_title + "</h1>"
-    html = "" + html + "<br>"
-    html = "" + html + "<input type=\"button\" onClick=\"window.location.href='fore' \" value=\"" + "MOVE FORWARD" + "\">"
-    // generate status text
-    if (normal) {
-        if (LED_status) {
-            LED_statusString = "ON"
-            LED_buttonString = "TURN IT OFF"
-        } else {
-            LED_statusString = "OFF"
-            LED_buttonString = "TURN IT ON"
-        }
-        html = "" + html + "<h3>LED STATUS: " + LED_statusString + "</h3>"
-        html = "" + html + "<h3>Light Level STATUS: " + input.lightLevel().toString() + "</h3>"
-        html = "" + html + "<h3>Temp STATUS: " + input.temperature().toString() + "</h3>"
-        html = "" + html + "<br>"
-        // generate buttons
-        html = "" + html + "<input type=\"button\" onClick=\"window.location.href='LED'\" value=\"" + LED_buttonString + "\">"
-        html = "" + html + "<br>"
-    } else {
-        html = "" + html + "<h3>ERROR: REQUEST NOT FOUND</h3>"
-    }
-    html = "" + html + "<br>"
-    html = "" + html + "<input type=\"button\" onClick=\"window.location.href='/'\" value=\"Home\">"
-    html = "" + html + "</div>"
-    html = "" + html + "</body>"
-    html = "" + html + "</html>"
-    return html
-}
+
 let LED_buttonString = ""
 let LED_statusString = ""
 let html = ""
@@ -205,14 +160,13 @@ while (true) {
 
 
 // output HTML
-        HTML_str = getHTML(GET_success)
         sendAT("AT+CIPSEND=" + client_ID + "," + (HTML_str.length + 2))
 sendAT(HTML_str, 1000)
 sendAT("AT+CIPCLOSE=" + client_ID)
 serial_str = ""
     }
 }
-function sendAT(command: string, waitTime: number = 100) {
+function sendAT(command: string, waitTime: number = 50) {
     serial.writeString(command + "\u000D\u000A")
     basic.pause(waitTime)
 }
