@@ -168,7 +168,7 @@ sendAT("AT+CIPCLOSE=" + client_ID)
 serial_str = ""
     }
 }
-function sendAT(command: string, waitTime: number = 50) {
+function sendAT(command: string, waitTime: number = 100) {
     serial.writeString(command + "\u000D\u000A")
     basic.pause(waitTime)
 }
