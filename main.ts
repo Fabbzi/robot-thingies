@@ -3,199 +3,206 @@
  * 
  * by Alan Wang
  */
-// for wifi connection
-function wait_for_response (str: string) {
-    time = input.runningTime()
+
+// Helper function to send AT commands
+function sendAT(command: string, waitTime: number = 100): boolean {
+    serial.writeString(`${command}\u000D\u000A`);
+    basic.pause(waitTime);
+    return waitForResponse("OK");
+}
+
+// Function to wait for a specific response from the ESP8266
+function waitForResponse(str: string): boolean {
+    let time = input.runningTime();
+    let serialStr = "";
     while (true) {
-        serial_str = "" + serial_str + serial.readString()
-        if (serial_str.length > 200) {
-            serial_str = serial_str.substr(serial_str.length - 200, 0)
+        serialStr += serial.readString();
+        if (serialStr.length > 200) {
+            serialStr = serialStr.substr(serialStr.length - 200);
         }
-        if (serial_str.includes(str)) {
-            result2 = true
+        if (serialStr.includes(str)) {
+            return true;
+        }
+        if (input.runningTime() - time > 30000) { // Reduce timeout for better handling
             break;
         }
-        if (input.runningTime() - time > 300000) {
+    }
+    return false;
+}
+
+// Function to generate HTML response
+function getHTML(normal: boolean): string {
+    const webTitle = "ESP8266 (ESP-01) Wifi on BBC micro:bit";
+    const htmlHead = `
+        HTTP/1.1 200 OK\r\n
+        Content-Type: text/html\r\n
+        Connection: close\r\n\r\n
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <link rel="icon" href="data:,">
+            <title>${webTitle}</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+        </head>
+        <body>
+            <div style="text-align:center">
+                <h1>${webTitle}</h1>
+                <br>
+                <input type="button" onClick="window.location.href='fore'" value="MOVE FORWARD">
+                <input type="button" onClick="window.location.href='back'" value="MOVE BACKWARD">
+                <input type="button" onClick="window.location.href='left'" value="MOVE LEFT">
+                <input type="button" onClick="window.location.href='right'" value="MOVE RIGHT">
+    `;
+
+    const htmlBody = normal ? `
+        <h3>LED STATUS: ${LED_status ? "ON" : "OFF"}</h3>
+        <h3>Light Level STATUS: ${input.lightLevel().toString()}</h3>
+        <h3>Temp STATUS: ${input.temperature().toString()}</h3>
+        <br>
+        <input type="button" onClick="window.location.href='LED'" value="${LED_status ? "TURN IT OFF" : "TURN IT ON"}">
+        <br>
+    ` : `
+        <h3>ERROR: REQUEST NOT FOUND</h3>
+    `;
+
+    const htmlFooter = `
+                <br>
+                <input type="button" onClick="window.location.href='/'" value="Home">
+            </div>
+        </body>
+        </html>
+    `;
+
+    return htmlHead + htmlBody + htmlFooter;
+}
+
+// Function to handle commands and update LED status
+function handleCommand(command: string): boolean {
+    switch (command) {
+        case "":
+            return true;
+        case "Sad":
+            toggleLED();
+            basic.showIcon(IconNames.Sad);
+            return true;
+        case "Happy":
+            toggleLED();
+            basic.showIcon(IconNames.Happy);
+            return true;
+        case "Spin":
+            playSpin();
+            return true;
+        case "fore":
+            moveMotors(maqueenPlusV2.MyEnumDir.Forward);
+            return true;
+        case "back":
+            moveMotors(maqueenPlusV2.MyEnumDir.Backward);
+            return true;
+        case "left":
+            moveMotors(maqueenPlusV2.MyEnumDir.Left);
+            return true;
+        case "right":
+            moveMotors(maqueenPlusV2.MyEnumDir.Right);
+            return true;
+        default:
+            return false;
+    }
+}
+
+// Helper function to toggle LED status
+function toggleLED(): void {
+    LED_status = 1 - LED_status;
+    pins.digitalWritePin(LED_pin, LED_status);
+}
+
+// Helper function to play spin animation
+function playSpin(): void {
+    music.play(music.stringPlayable("C5 D E G - C5 A F ", 320), music.PlaybackMode.UntilDone);
+    for (let index = 0; index < 400; index++) {
+        maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, 20);
+        maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Backward, 20);
+    }
+    maqueenPlusV2.controlMotorStop(maqueenPlusV2.MyEnumMotor.AllMotor);
+}
+
+// Helper function to move motors
+function moveMotors(direction: maqueenPlusV2.MyEnumDir): void {
+    const speed = 20;
+    switch (direction) {
+        case maqueenPlusV2.MyEnumDir.Forward:
+            maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, direction, speed);
+            maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, direction, speed);
             break;
-        }
+        case maqueenPlusV2.MyEnumDir.Backward:
+            maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, direction, speed);
+            maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, direction, speed);
+            break;
+        case maqueenPlusV2.MyEnumDir.Left:
+            maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, speed);
+            maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Backward, speed);
+            break;
+        case maqueenPlusV2.MyEnumDir.Right:
+            maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Backward, speed);
+            maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Forward, speed);
+            break;
     }
-    return result2
+    basic.pause(400); // Adjust duration as needed
+    maqueenPlusV2.controlMotorStop(maqueenPlusV2.MyEnumMotor.AllMotor);
 }
-// generate HTML
-function getHTML (normal: boolean) {
-    web_title = "ESP8266 (ESP-01) Wifi on BBC micro:bit"
-    // HTTP response
-    html = "" + html + "HTTP/1.1 200 OK\r\n"
-    html = "" + html + "Content-Type: text/html\r\n"
-    html = "" + html + "Connection: close\r\n\r\n"
-    html = "" + html + "<!DOCTYPE html>"
-    html = "" + html + "<html>"
-    html = "" + html + "<head>"
-    html = "" + html + "<link rel=\"icon\" href=\"data:,\">"
-    html = "" + html + "<title>" + web_title + "</title>"
-    // mobile view
-    html = "" + html + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
-    html = "" + html + "</head>"
-    html = "" + html + "<body>"
-    html = "" + html + "<div style=\"text-align:center\">"
-    html = "" + html + "<h1>" + web_title + "</h1>"
-    html = "" + html + "<br>"
-    html = "" + html + "<input type=\"button\" onClick=\"window.location.href='fore' \" value=\"" + "MOVE FORWARD" + "\">"
-    // generate status text
-    if (normal) {
-        if (LED_status) {
-            LED_statusString = "ON"
-            LED_buttonString = "TURN IT OFF"
-        } else {
-            LED_statusString = "OFF"
-            LED_buttonString = "TURN IT ON"
-        }
-        html = "" + html + "<h3>LED STATUS: " + LED_statusString + "</h3>"
-        html = "" + html + "<h3>Light Level STATUS: " + input.lightLevel().toString() + "</h3>"
-        html = "" + html + "<h3>Temp STATUS: " + input.temperature().toString() + "</h3>"
-        html = "" + html + "<br>"
-        // generate buttons
-        html = "" + html + "<input type=\"button\" onClick=\"window.location.href='LED'\" value=\"" + LED_buttonString + "\">"
-        html = "" + html + "<br>"
-    } else {
-        html = "" + html + "<h3>ERROR: REQUEST NOT FOUND</h3>"
-    }
-    html = "" + html + "<br>"
-    html = "" + html + "<input type=\"button\" onClick=\"window.location.href='/'\" value=\"Home\">"
-    html = "" + html + "</div>"
-    html = "" + html + "</body>"
-    html = "" + html + "</html>"
-    return html
-}
-let LED_buttonString = ""
-let LED_statusString = ""
-let html = ""
-let web_title = ""
-let result2 = false
-let time = 0
-let HTTP_pos = 0
-let GET_pos = 0
-let serial_str = ""
-let result = false
-let LED_status: number = 0
-let GET_success: boolean = false
-let client_ID = ""
-let GET_command = ""
-let HTML_str = ""
 
-//robot variables
-let speed = 20
+// User settings
+const WIFI_MODE = 2;
+const Tx_pin: SerialPin = SerialPin.P12;
+const Rx_pin: SerialPin = SerialPin.P8;
+const LED_pin = DigitalPin.P2;
+const SSID_1 = "-----";
+const PASSWORD_1 = "-----";
+const SSID_2 = "LinusToy";
+const PASSWORD_2 = "gaylinux";
+let LED_status = 0;
 
-// user settings
-// 1 = STA (station, connect to wifi router); 2 = AP (make itself an access point)
-let WIFI_MODE = 2
-const Tx_pin: SerialPin = SerialPin.P12
-const Rx_pin: SerialPin = SerialPin.P8
-// pin for LED control
-let LED_pin = DigitalPin.P2
-// wifi router ssid for station mode
-let SSID_1 = "-----"
-// wifi router password for station mode
-let PASSWORD_1 = "-----"
-// AP server ssid for AP mode
-let SSID_2 = "LinusToy"
-// AP password for AP mode (at least 8 characters)
-let PASSWORD_2 = "gaylinux"
-// initialize LED
-pins.digitalWritePin(LED_pin, 0)
-serial.redirect(Tx_pin, Rx_pin, 115200)
-sendAT("AT+RESTORE", 1000)
-sendAT("AT+RST", 1000)
-sendAT("AT+CWMODE=" + WIFI_MODE)
-if (WIFI_MODE == 1) {
-    sendAT("AT+CWJAP=\"" + SSID_1 + "\",\"" + PASSWORD_1 + "\"")
-result = wait_for_response("OK")
-    if (!(result)) {
-        control.reset()
-    }
-} else if (WIFI_MODE == 2) {
-    sendAT("AT+CWSAP=\"" + SSID_2 + "\",\"" + PASSWORD_2 + "\",1,4", 1000)
+// Initialize LED and serial
+pins.digitalWritePin(LED_pin, 0);
+serial.redirect(Tx_pin, Rx_pin, 115200);
+
+// Send initialization commands
+if (!sendAT("AT+RESTORE", 1000) || !sendAT(`AT+CWMODE=${WIFI_MODE};AT+RST`, 1000)) {
+    control.reset();
 }
-sendAT("AT+CIPMUX=1")
-sendAT("AT+CIPSERVER=1,80")
-sendAT("AT+CIFSR")
-// startup completed
-basic.showIcon(IconNames.Yes)
-// process HTTP request
+if (WIFI_MODE === 1) {
+    if (!sendAT(`AT+CWJAP="${SSID_1}","${PASSWORD_1}"`) || !waitForResponse("OK")) {
+        control.reset();
+    }
+} else if (WIFI_MODE === 2) {
+    if (!sendAT(`AT+CWSAP="${SSID_2}","${PASSWORD_2}",1,4`, 1000)) {
+        control.reset();
+    }
+}
+if (!sendAT("AT+CIPMUX=1") || !sendAT("AT+CIPSERVER=1,80") || !sendAT("AT+CIFSR")) {
+    control.reset();
+}
+
+// Startup completed
+basic.showIcon(IconNames.Yes);
+
+// Process HTTP requests
 while (true) {
-    // read and store 200 characters from serial port
-    serial_str = "" + serial_str + serial.readString()
-    if (serial_str.length > 200) {
-        serial_str = serial_str.substr(serial_str.length - 200, 0)
+    let serialStr = serial.readString();
+    if (serialStr.length > 200) {
+        serialStr = serialStr.substr(serialStr.length - 200);
     }
-    if (serial_str.includes("+IPD") && serial_str.includes("HTTP")) {
-        // got a HTTP request
-        client_ID = serial_str.substr(serial_str.indexOf("IPD") + 4, 1)
-        GET_pos = serial_str.indexOf("GET")
-        HTTP_pos = serial_str.indexOf("HTTP")
-        GET_command = serial_str.substr(GET_pos + 5, HTTP_pos - 1 - (GET_pos + 5))
-        switch (GET_command) {
-            case "": // request 192.168.x.x/
-                GET_success = true
-                break
-            case "Sad": // request 192.168.x.x/Sad
-                GET_success = true
-                LED_status = 1 - LED_status
-                pins.digitalWritePin(LED_pin, LED_status)
-                basic.showIcon(IconNames.Sad)
-                break
-            case "Happy": // request 192.168.x.x/Happy
-                GET_success = true
-                LED_status = 1 - LED_status
-                pins.digitalWritePin(LED_pin, LED_status)
-                basic.showIcon(IconNames.Happy)
-                break
-            case "Spin": // request 192.168.x.x/Sigma
-                GET_success = true
+    if (serialStr.includes("+IPD") && serialStr.includes("HTTP")) {
+        const client_ID = serialStr.substr(serialStr.indexOf("IPD") + 4, 1);
+        const GET_pos = serialStr.indexOf("GET");
+        const HTTP_pos = serialStr.indexOf("HTTP");
+        const GET_command = serialStr.substr(GET_pos + 5, HTTP_pos - 1 - (GET_pos + 5));
 
-                music.play(music.stringPlayable("C5 D E G - C5 A F ", 320), music.PlaybackMode.UntilDone)
-                for (let index = 0; index < 400; index++) {
-                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, speed)
-                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Backward, speed)
-                    
-                }
-                maqueenPlusV2.controlMotorStop(maqueenPlusV2.MyEnumMotor.AllMotor)
-                //maqueenPlusV2.setBrightness(100)
+        const GET_success = handleCommand(GET_command);
+        const HTML_str = getHTML(GET_success);
 
-                break
-            case "fore": // request 192.168.x.x/fore
-                GET_success = true
-
-                for (let index2 = 0; index2 < 1000; index2++) {
-                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Forward, speed)
-                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Forward, speed)
-                    speed += 10
-                }
-                maqueenPlusV2.controlMotorStop(maqueenPlusV2.MyEnumMotor.AllMotor)
-                //maqueenPlusV2.setBrightness(100)
-
-                break
-            case "back": // request 192.168.x.x/back
-                GET_success = true
-
-                for (let index3 = 0; index3 < 400; index3++) {
-                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.RightMotor, maqueenPlusV2.MyEnumDir.Backward, speed)
-                    maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Backward, speed)
-                }
-                maqueenPlusV2.controlMotorStop(maqueenPlusV2.MyEnumMotor.AllMotor)
-                //maqueenPlusV2.setBrightness(100)
-
-                break
-        }
-// output HTML
-        HTML_str = getHTML(GET_success)
-        sendAT("AT+CIPSEND=" + client_ID + "," + (HTML_str.length + 2))
-sendAT(HTML_str, 1000)
-sendAT("AT+CIPCLOSE=" + client_ID)
-serial_str = ""
+        sendAT(`AT+CIPSEND=${client_ID},${HTML_str.length + 2}`);
+        sendAT(HTML_str, 1000);
+        sendAT(`AT+CIPCLOSE=${client_ID}`);
+        serialStr = "";
     }
-}
-function sendAT(command: string, waitTime: number = 100) {
-    serial.writeString(command + "\u000D\u000A")
-    basic.pause(waitTime)
 }
